@@ -1,0 +1,27 @@
+meta {
+  name: Create User
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{base_url}}/users
+  body: multipartForm
+  auth: inherit
+}
+
+body:json {
+  {
+    "username": "gaurav",
+    "password": "password@123"
+  }
+}
+
+body:multipart-form {
+  email: ok@nomail.com
+  password: password
+}
+
+settings {
+  encodeUrl: true
+}

@@ -1,0 +1,25 @@
+{
+	"name": "Go Dev Container",
+	"dockerFile": "Dockerfile",
+	"context": ".",
+	"workspaceFolder": "/workspace",
+	"forwardPorts": [
+		8080
+	],
+	"runArgs": [
+		"--network=host"
+	],
+	"customizations": {
+		"vscode": {
+			"settings": {
+				"go.toolsManagement.checkForUpdates": "local",
+				"go.useLanguageServer": true
+			},
+			"extensions": [
+				"golang.go",
+				"ms-azuretools.vscode-docker"
+			]
+		}
+	},
+	"postCreateCommand": "go mod tidy"
+}

@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: vms-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: vms
+      MYSQL_USER: vmsuser
+      MYSQL_PASSWORD: vmspass
+      HMAC_SECRET_KEY: HMAC_SECRET_KEY
+    command: ['mysqld', '--default-time-zone=+05:30']
+    ports:
+      - "3306:3306"
+    volumes:
+      - vms-mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "vmsuser", "-pvmspass"]
+      interval: 5s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: vms-backend
+    depends_on:
+      mysql:
+        condition: service_healthy  # Wait for MySQL to be healthy
+    environment:
+      DB_USER: vmsuser
+      DB_PASS: vmspass
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: vms
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  vms-mysql-data:
