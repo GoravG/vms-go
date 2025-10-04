@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"net"
 	"strings"
+	"vms_go/internal/token"
 	"vms_go/internal/utils"
 	"vms_go/internal/ws"
 )
@@ -37,6 +38,7 @@ func SubscribeToRedis(hub *ws.Hub, addr, channel string) {
 			payload, _ := reader.ReadString('\n')
 			payload = strings.TrimSpace(payload)
 			utils.LogInfof("Received from redis: %s", payload)
+			token.SetToken(payload)
 			hub.Broadcast(payload)
 		}
 	}

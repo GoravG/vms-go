@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"log"
 	"net/http"
+	"vms_go/internal/token"
 	"vms_go/internal/utils"
 
 	"golang.org/x/crypto/bcrypt"
@@ -41,4 +42,20 @@ func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusCreated)
 	w.Write([]byte("user created"))
+}
+
+func (h *UserHandler) Checkin(w http.ResponseWriter, r *http.Request) {
+	params := r.URL.Query()
+	paramToken := params.Get("token")
+	utils.LogInfo(paramToken)
+	if paramToken == "" {
+		http.Error(w, "missing required parameters: token", http.StatusBadRequest)
+		return
+	}
+	redisToken := token.GetToken()
+	if paramToken == redisToken {
+		w.WriteHeader(http.StatusOK)
+	} else {
+		w.WriteHeader(http.StatusUnauthorized)
+	}
 }

@@ -40,6 +40,7 @@ func main() {
 	// mux.HandleFunc("POST /logout", authHandler.Logout)
 	userHandler := &handlers.UserHandler{DB: database}
 	mux.HandleFunc("POST /users", userHandler.CreateUser)
+	mux.HandleFunc("GET /checkin", userHandler.Checkin)
 
 	hub := ws.NewHub()
 	mux.Handle("/ws", &handlers.WSHandler{Hub: hub})
@@ -48,13 +49,6 @@ func main() {
 	// mux.Handle("GET /protected", middleware.Auth(protected, cfg.HMACSecret))
 	redisConnectionString := fmt.Sprintf("%s:%s", cfg.REDIS_HOST, cfg.REDIS_PORT)
 	go redis.SubscribeToRedis(hub, redisConnectionString, cfg.REDIS_CHANNEL)
-	// go func() {
-	// 	for {
-	// 		hub.Broadcast("hello clients")
-	// 		// send every 5s
-	// 		<-time.After(30 * time.Second)
-	// 	}
-	// }()
 
 	srv := &http.Server{
 		Addr:              cfg.Addr,
