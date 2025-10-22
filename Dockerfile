@@ -1,5 +1,5 @@
 # Build stage
-FROM golang:1.25 AS builder
+FROM golang:1.25.3-alpine AS builder
 
 WORKDIR /app
 
@@ -14,7 +14,7 @@ COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build -o /app/server ./cmd/server
 
 # Final stage
-FROM gcr.io/distroless/base-debian12:latest
+FROM alpine:latest
 
 WORKDIR /app
 
