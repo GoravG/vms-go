@@ -67,12 +67,12 @@ func (h *UserHandler) Checkin(w http.ResponseWriter, r *http.Request) {
 	claims, err := security.VerifyAndExtractClaims(body.UserToken)
 	if err != nil {
 		http.Error(w, "unable to verify token", http.StatusUnauthorized)
+		utils.LogErrorf("unable to verify token for user %s", claims.Email)
 	}
 
 	// Compare token with Redis value (as before)
 	redisToken := token.GetToken()
 	if paramToken == redisToken {
-		w.WriteHeader(http.StatusOK)
 		alreadyCheckedIn, err := utils.VisitorAlreadyCheckedIn(h.DB, claims.Email)
 		if err != nil {
 			log.Fatal(err)
@@ -81,18 +81,22 @@ func (h *UserHandler) Checkin(w http.ResponseWriter, r *http.Request) {
 			err := utils.UpdateVisitLog(h.DB, claims.Email)
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
-				w.Write([]byte("Error in updating exising visit log"))
+				w.Write([]byte("error in updating exising visit log"))
+				utils.LogErrorf("error in updating exising visit log: %s", err.Error())
 			}
 			w.WriteHeader(http.StatusOK)
 			w.Write([]byte("Updated visit log successfully"))
+			utils.LogInfof("user %s already checked in updated existing log", claims.Email)
 		} else {
 			err := utils.InsertVisitLog(h.DB, claims.Email)
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
-				w.Write([]byte("Error in inserting visit log"))
+				w.Write([]byte("error in inserting visit log"))
+				utils.LogErrorf("error in inserting visit log: %s", err.Error())
 			}
 			w.WriteHeader(http.StatusOK)
 			w.Write([]byte("Checked in successfully"))
+			utils.LogInfof("added visitor log for user %s", claims.Email)
 		}
 	} else {
 		w.WriteHeader(http.StatusUnauthorized)
