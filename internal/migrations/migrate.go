@@ -21,6 +21,7 @@ func (m *Migrator) RunMigrtations() error {
 		sql       string
 	}{
 		{"users", models.User{}.CreateTableSQL()},
+		{"visit_log", models.VisitLog{}.CreateTableSQL()},
 	}
 
 	for _, migration := range migrations {

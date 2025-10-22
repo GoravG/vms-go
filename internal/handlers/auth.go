@@ -32,9 +32,17 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data := []byte(email)
+	claims := security.Claims{
+		Email:  email,
+		UserID: userID,
+	}
 
-	tokenStr := security.GenerateHMAC(data)
+	tokenStr, err := security.GenerateToken(claims)
+	if err != nil {
+		http.Error(w, "Error generating token", http.StatusInternalServerError)
+		return
+	}
+
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("X-Auth-Token", tokenStr)
 

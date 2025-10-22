@@ -40,7 +40,7 @@ func main() {
 	// mux.HandleFunc("POST /logout", authHandler.Logout)
 	userHandler := &handlers.UserHandler{DB: database}
 	mux.HandleFunc("POST /users", userHandler.CreateUser)
-	mux.HandleFunc("GET /checkin", userHandler.Checkin)
+	mux.HandleFunc("POST /checkin", userHandler.Checkin)
 
 	hub := ws.NewHub()
 	mux.Handle("/ws", &handlers.WSHandler{Hub: hub})

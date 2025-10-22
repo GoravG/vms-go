@@ -19,12 +19,12 @@ you can effectively work with "dates" by focusing on the year, month, and day co
 
 func (VisitLog) CreateTableSQL() string {
 	return `
-	CREATE TABLE IF NOT EXISTS users (
+	CREATE TABLE IF NOT EXISTS visit_log (
 		id BIGINT AUTO_INCREMENT PRIMARY KEY,
 		visitor VARCHAR(50) NOT NULL,
 		visit_date DATE NOT NULL,
 		check_in_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-		check_out_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+		check_out_time TIMESTAMP,
 		FOREIGN KEY (visitor) REFERENCES users(email)
 	) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 	`
